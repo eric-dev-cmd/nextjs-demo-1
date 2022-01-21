@@ -3,19 +3,19 @@ import NewMeetupForm from "../../components/meetups/NewMeetupForm";
 
 function NewMeeupPage() {
   const router = useRouter();
-  console.log(router);
   const onHandlerAddMeetup = async (dataEntered) => {
-    console.log(dataEntered);
-    const response = await fetch("/api/new-meetup", {
-      method: "POST",
-      body: JSON.stringify(dataEntered),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log("Thanh cong");
+
+    const response = await fetch(
+      "https://60fa76bc7ae59c0017166164.mockapi.io/api/products",
+      {
+        method: "POST",
+        body: JSON.stringify(dataEntered),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     const data = await response.json();
-    console.log(data);
     router.push("/");
   };
   return <NewMeetupForm onAddMeetup={onHandlerAddMeetup} />;

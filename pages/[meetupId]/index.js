@@ -1,9 +1,6 @@
 import { Fragment } from "react";
 import MeetupDetail from "../../components/meetups/MeetupDetail";
-import { MongoClient } from "mongodb";
-import { ObjectID } from "bson";
 function NewMeeupDetails(props) {
-  console.log(props);
   return (
     <Fragment>
       <MeetupDetail
@@ -16,38 +13,41 @@ function NewMeeupDetails(props) {
   );
 }
 export async function getStaticPaths() {
-  const client = await MongoClient.connect(
-    "mongodb+srv://admin:DHKTPM14@cluster0.lxnwb.mongodb.net/meetups?authSource=admin&replicaSet=atlas-7iqx95-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true"
+  const response = await fetch(
+    "https://60fa76bc7ae59c0017166164.mockapi.io/api/products",
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
   );
-  const db = client.db();
-  const meetupCollections = db.collection("meetups");
-  const meetups = await meetupCollections.find({}, { _id: 1 }).toArray();
-  client.close();
+  const meetups = await response.json();
   return {
-    fallback: "blocking",
+    fallback: false,
     paths: meetups.map((meetup) => ({
       params: {
-        meetupId: meetup._id.toString(),
+        meetupId: meetup.id.toString(),
       },
     })),
   };
 }
 export async function getStaticProps(context) {
   const meetupId = context.params.meetupId;
-  const client = await MongoClient.connect(
-    "mongodb+srv://admin:DHKTPM14@cluster0.lxnwb.mongodb.net/meetups?authSource=admin&replicaSet=atlas-7iqx95-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true"
+  const response = await fetch(
+    "https://60fa76bc7ae59c0017166164.mockapi.io/api/products/" + meetupId,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
   );
-  const db = client.db();
-  const meetupCollections = db.collection("meetups");
-  const selectedMeetup = await meetupCollections.findOne({
-    _id: ObjectID(meetupId),
-  });
-
-  client.close();
+  const selectedMeetup = await response.json();
   return {
     props: {
       meetupData: {
-        id: selectedMeetup._id.toString(),
+        id: selectedMeetup.id,
         title: selectedMeetup.title,
         image: selectedMeetup.image,
         address: selectedMeetup.address,

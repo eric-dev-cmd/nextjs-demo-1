@@ -1,25 +1,6 @@
 import MeetupList from "../components/meetups/MeetupList";
-import { MongoClient } from "mongodb";
 import Head from "next/head";
-import { Fragment } from "react/cjs/react.production.min";
-// const DUMMY_MEETUPS = [
-//   {
-//     id: "m1",
-//     title: "A First Meetup",
-//     image:
-//       "https://upload.wikimedia.org/wikipedia/commons/3/37/Hanoi_skyline_at_night.jpg",
-//     address: "Some address 5, 123456 Some City",
-//     description: "This is a first meetup!",
-//   },
-//   {
-//     id: "m2",
-//     title: "A Second Meetup",
-//     image:
-//       "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Hanoi_Opera_House%2C_24_December_2016.jpg/800px-Hanoi_Opera_House%2C_24_December_2016.jpg",
-//     address: "Some address 10, 123456 Some City",
-//     description: "This is a second meetup!",
-//   },
-// ];
+import { Fragment } from "react";
 
 function HomePage(props) {
   return (
@@ -39,15 +20,18 @@ function HomePage(props) {
 //     },
 //   };
 // }
+
 export async function getStaticProps() {
-  const client = await MongoClient.connect(
-    "mongodb+srv://admin:DHKTPM14@cluster0.lxnwb.mongodb.net/meetups?authSource=admin&replicaSet=atlas-7iqx95-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true"
+  const response = await fetch(
+    "https://60fa76bc7ae59c0017166164.mockapi.io/api/products",
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
   );
-  const db = client.db();
-  const meetupCollections = db.collection("meetups");
-  const meetups = await meetupCollections.find().toArray();
-  console.log(meetups);
-  client.close();
+  const meetups = await response.json();
   return {
     props: {
       meetups: meetups.map((meetup) => ({
@@ -55,7 +39,7 @@ export async function getStaticProps() {
         image: meetup.image,
         address: meetup.address,
         description: meetup.description,
-        id: meetup._id.toString(),
+        id: meetup.id,
       })),
       revalidate: 1,
     },
