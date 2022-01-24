@@ -1,6 +1,9 @@
 import { Fragment } from "react";
 import MeetupDetail from "../../components/meetups/MeetupDetail";
 function NewMeeupDetails(props) {
+  if (!props.meetupData) {
+    return <p>Loading...</p>;
+  }
   return (
     <Fragment>
       <MeetupDetail
@@ -24,7 +27,7 @@ export async function getStaticPaths() {
   );
   const meetups = await response.json();
   return {
-    fallback: false,
+    fallback: true,
     paths: meetups.map((meetup) => ({
       params: {
         meetupId: meetup.id.toString(),
@@ -44,6 +47,9 @@ export async function getStaticProps(context) {
     }
   );
   const selectedMeetup = await response.json();
+  if (!selectedMeetup) {
+    return { notFound: true };
+  }
   return {
     props: {
       meetupData: {
@@ -53,6 +59,7 @@ export async function getStaticProps(context) {
         address: selectedMeetup.address,
         description: selectedMeetup.description,
       },
+      revalidate: 10,
     },
   };
 }
